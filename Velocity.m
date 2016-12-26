@@ -1,15 +1,29 @@
-function U = Velocity( Node, P )
+function rNodes = Velocity( dt, Nodes )
 %Нахождение скоростей
-dtx = (abs(Node(i-1,j).t-Node(i+1,j).t));
-A = (P(i+1,j).x-P(i-1,j).x)./(2.*ro.*(abs(Node(i-1,j).x-Node(i+1,j).x)));
-B = Node(i,j).u./dtx;
-C = (Node(i,j).x.*(Node(i+1,j).u-Node(i-1,j).u))./(2*Node(abs(Node(i+1,j).x-Node(i-1,j).x)));
-D = (Node(i,j).y.*(Node(i,j+1).v-Node(i,j-1).v))./(2*Node(abs(Node(i,j+1).y-Node(i,j-1).y)));
-U(i,j).x = -dtx.*(A-B+C+D);
+ro = 1000;
+[Nx,Ny,Nz] = size(Nodes);
+rNodes = Nodes;
+for i = 2:Nx-1
+    for j = 2:Ny-1
+        for k = 1:Nz
+            if Nodes(i,j,k).boundary == 'none'
+                A = (Nodes(i+1,j,k).p-Nodes(i-1,j,k).p)./(2.*ro.*(abs(Nodes(i-1,j,k).x-Nodes(i+1,j,k).x)));
+                B = Nodes(i,j,k).u./dt;
+                C = (Nodes(i,j,k).x.*(Nodes(i+1,j,k).u-Nodes(i-1,j,k).u))./(2.*(abs(Nodes(i+1,j,k).x-Nodes(i-1,j,k).x)));
+                D = (Nodes(i,j,k).y.*(Nodes(i,j+1,k).u-Nodes(i,j-1,k).u))./(2.*(abs(Nodes(i,j+1,k).y-Nodes(i,j-1,k).y)));
+                Ux = -dt.*(A-B+C+D);
+                
+                A1 = (Nodes(i,j+1,k).p-Nodes(i,j-1,k).p)./(2.*ro.*(abs(Nodes(i,j-1,k).y-Nodes(i,j+1,k).y)));
+                B1 = Nodes(i,j,k).v./dt;
+                C1 = (Nodes(i,j,k).x.*(Nodes(i+1,j,k).v-Nodes(i-1,j,k).v))./(2.*(abs(Nodes(i+1,j,k).x-Nodes(i-1,j,k).x)));
+                D1 = (Nodes(i,j,k).y.*(Nodes(i,j+1,k).v-Nodes(i,j-1,k).v))./(2.*(abs(Nodes(i,j+1,k).y-Nodes(i,j-1,k).y)));
+                Uy = -dt.*(A1-B1+C1+D1);
 
-dty = (abs(Node(i,j-1).t-Node(i,j+1).t));
-A = (P(i,j+1).y-P(i,j-1).y)./(2.*ro.*(abs(Node(i,j-1).y-Node(i,j+1).y)));
-B = Node(i,j).v./dty;
-U(i,j).y = -dty.*(A1-B1+C+D);
+                rNodes(i,j,k).u = Ux;
+                rNodes(i,j,k).v = Uy;
+            end
+        end
+    end
+end
 end
 
