@@ -1,16 +1,27 @@
 clear, clc;
-Nodes = CreateNodes(10, 10, 2, 1, 1, 1);
+Nx = 10;
+Ny = 10;
+Nz = 2;
+Lx = 0.2;
+Ly = 0.2;
+Lz = 1;
+hx = Lx / (Nx-1);
+hy = Ly / (Ny-1);
+hz = Lz / (Nz-1);
+Nodes = CreateNodes(Nx, Ny, Nz, Lx, Ly, Lz, hx, hy ,hz);
 Nodes = SetBoundary(Nodes);
 
 
 
-dt = 0.02;
-T = 3;
+dt = 0.005;
+T = 0.5;
 t = 0;
+
 while t <= T
-    Nodes = Divergence(Nodes);
     
-    Nodes = A_Poisson(dt ,Nodes);
+    Nodes = Divergence(Nodes, hx, hy, hz);
+    
+    Nodes = A_Poisson(dt ,Nodes, hx, hy, hz);
     watch1 = Nodes(:,:,2);
     
 %     mas = zeros(2,10);
@@ -26,6 +37,8 @@ while t <= T
     watch3 = Nodes(:,:,2);
     t = t+dt;
 end
+
+
 watch(:,:) = Nodes(:,:,2);
 [Nx,Ny] = size(watch);
 C = repmat(double(inf), Nx, Ny);
@@ -35,6 +48,6 @@ for i=1:Nx
     end
 end
 
-contourf(C);
+contourf(C, 'ShowText', 'on');
 
 
