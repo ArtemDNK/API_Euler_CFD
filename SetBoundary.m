@@ -4,9 +4,9 @@ function Nodes = SetBoundary( Nodes )
  for j = 1:Ny
      for k = 1:Nz
          Nodes(1, j, k).u = 0.5;
-         Nodes(1, j, k).boundary = 'vel';
+         Nodes(1, j, k).boundary = 1;
          Nodes(Nx, j, k).u = 0.5;
-         Nodes(Nx, j, k).boundary = 'vel';
+         Nodes(Nx, j, k).boundary = 1;
      end
  end;
 
